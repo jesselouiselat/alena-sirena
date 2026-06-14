@@ -28,4 +28,19 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function orderItem(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function cartItem(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
 }

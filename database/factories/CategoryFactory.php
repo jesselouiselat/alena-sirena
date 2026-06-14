@@ -18,14 +18,18 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->word();
+
+        $categories = ['Freediver', 'Carbon Fins', 'Neoprene Suit', 'Silicone Mask', 'Snorkel',
+        ];
+
+        $name = fake()->unique()->randomElement($categories);
         return [
-            "name"=>ucfirst($name),
-            "slug"=>Str::slug($name),
-            "description"=>$this->faker->paragraph(1),
+            "name" => ucfirst($name),
+            "slug" => Str::slug($name),
+            "description" => $this->faker->paragraph(1),
             'image_url' => 'https://picsum.photos/seed/'.Str::random(5).'/600/400', // Placeholders
 
-        
+
 
 
 

@@ -18,8 +18,16 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->words(3, true); // Generates a 3-word product name
 
+        $seaWords = [
+            'Freediver', 'Carbon Fins', 'Neoprene Suit', 'Silicone Mask', 'Snorkel',
+            'Weightbelt', 'Monofin', 'Bi-fins', 'Lanyard', 'Dive Computer', 'Buoy',
+            'Line Tracker', 'Apnea', 'Depth Gauge', 'Reef Safe', 'Mermaid Tail',
+            'Thermocline', 'Hydrodynamic', 'Saltwater', 'Coral Coast', 'Isla'
+        ];
+        $baseName = fake()->randomElement($seaWords).' '.fake()->randomElement(['Pro', 'Elite', 'Classic', 'X', 'Series', 'V2']);
+
+        $name = $baseName.' '.strtoupper(fake()->bothify('#??'));
         return [
             'name' => ucfirst($name),
             'slug' => Str::slug($name), // Converts "Cool Wet Suit" to "cool-wet-suit"
