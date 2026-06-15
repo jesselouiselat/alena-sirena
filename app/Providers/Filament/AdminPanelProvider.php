@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\Categories\Widgets\Categories;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,6 +31,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->plugins([
+                FilamentShieldPlugin::make()
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -54,6 +58,9 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->plugins([
+                FilamentShieldPlugin::make(),
+            ])
             ->authMiddleware([
                 Authenticate::class,
             ])->navigationGroups([
@@ -66,6 +73,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make("Users")
                         ->icon('heroicon-o-user')
                         ->collapsed(),
+
 
 
                 ]);

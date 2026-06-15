@@ -13,13 +13,21 @@ class ProductController extends Controller
 
     public function index()
     {
-
-
-
         return Inertia::render('Shop/Home', [
             'products' => Product::with(["images", "categories"])->get(), // Passing your 12 seeded database products here!
             'categories' => Category::with("products.images")->get()
         ]);
+    }
+
+    public function show(Product $product)
+    {
+        return Inertia::render('Shop/ShowProductPage', [
+            "product" => $product->load(["categories", "images", "variants"]),
+            'categories' => Category::with("products.images")->get()
+
+        ]);
+
+
     }
 }
 
