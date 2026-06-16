@@ -13,7 +13,7 @@ const navigation = {
     ],
 };
 
-export default function AuthenticatedLayout({ categories = [], header, children }) {
+export default function AuthenticatedLayout({ categories , header, children }) {
     const user = usePage().props.auth.user;
     const [open, setOpen] = useState(false);
 

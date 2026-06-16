@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import ImageCarousel from '@/Components/ImageCarousel'
-import { useForm, usePage } from '@inertiajs/react'
 
+// Dictionary to map backend text entries to Tailwind layout styles
 const colorClassMap = {
   'Ocean Blue': 'bg-blue-600',
   'Manta Grey': 'bg-gray-500',
@@ -13,13 +13,7 @@ function classNames(...classes) {
 }
 
 export default function ShowProduct({ product }) {
-
-  const { props } = usePage();
-  const { auth } = props;
-  const user = auth.user;
-  
-  console.log(user);
-  
+  // 1. Parse unique color variations dynamically from the variant rows
   const uniqueColors = useMemo(() => {
     if (!product.variants) return []
     const seen = new Set()
@@ -35,15 +29,11 @@ export default function ShowProduct({ product }) {
       }))
   }, [product.variants])
 
+  // 2. Local reactive states initialized directly using variant array properties
   const [selectedColor, setSelectedColor] = useState(uniqueColors[0]?.name || '')
   const [selectedSize, setSelectedSize] = useState('')
 
-  // Inertia Form Hook
-  const { data, setData, post, processing } = useForm({
-    variant_id: '',
-    quantity: 1,
-  })
-
+  // 3. Compute structural sizes matching the currently chosen active color
   const sizesForSelectedColor = useMemo(() => {
     if (!product.variants) return []
     
@@ -52,32 +42,15 @@ export default function ShowProduct({ product }) {
       .map(v => ({
         name: v.size,
         inStock: v.stock > 0,
-        price: v.price,
         stock: v.stock,
         sku: v.sku
       }))
   }, [product.variants, selectedColor])
 
+  // 4. Track matching record array indices for submission properties
   const activeVariant = useMemo(() => {
     return product.variants?.find(v => v.color === selectedColor && v.size === selectedSize)
   }, [product.variants, selectedColor, selectedSize])
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-
-    if (!user) {
-      const currentUrl = window.location.href;
-      window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-      return;
-    }
-
-
-    if (!data.variant_id) return
-
-    post(route('cart.store'), {
-      preserveScroll: true,
-    })
-  }
 
   return (
     <div className="bg-white">
@@ -131,11 +104,9 @@ export default function ShowProduct({ product }) {
           {/* Options Interaction Action Panel Sidebar */}
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
-            <p className="text-3xl tracking-tight text-gray-900">
-              ₱{activeVariant?.price ? activeVariant.price : product.price}
-            </p>
+            <p className="text-3xl tracking-tight text-gray-900">₱{product.price}</p>
 
-            <form className="mt-10" onSubmit={handleSubmit}>
+            <form className="mt-10" onSubmit={(e) => e.preventDefault()}>
               {/* Variant Group Selection: Colors */}
               {uniqueColors.length > 0 && (
                 <div>
@@ -156,12 +127,6 @@ export default function ShowProduct({ product }) {
                             onClick={() => {
                               setSelectedColor(color.name)
                               setSelectedSize('') 
-                              // Clear old variant state information and reset count
-                              setData(old => ({
-                                ...old,
-                                variant_id: '',
-                                quantity: 1
-                              }))
                             }}
                             aria-label={color.name}
                             className={classNames(
@@ -176,7 +141,7 @@ export default function ShowProduct({ product }) {
                 </div>
               )}
 
-              {/* Variant Group Selection: Sizes & Quantities */}
+              {/* Variant Group Selection: Sizes */}
               {sizesForSelectedColor.length > 0 && (
                 <div className="mt-10">
                   <div className="flex items-center justify-between">
@@ -195,16 +160,7 @@ export default function ShowProduct({ product }) {
                           key={size.name}
                           type="button"
                           disabled={!size.inStock}
-                          onClick={() => {
-                            setSelectedSize(size.name)
-                            const match = product.variants?.find(
-                              variant => variant.color === selectedColor && variant.size === size.name
-                            )
-
-                            if (match) {
-                              setData('variant_id', match.id)
-                            }
-                          }}
+                          onClick={() => setSelectedSize(size.name)}
                           className={classNames(
                             size.inStock ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-25 bg-gray-200 line-through',
                             selectedSize === size.name ? 'border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700' : 'border-gray-300 bg-white text-gray-900',
@@ -214,66 +170,24 @@ export default function ShowProduct({ product }) {
                           <span>{size.name}</span>
                         </button>
                       ))}
-                    </div>        
-                  </fieldset>
-
-                  {/* Quantity Fieldset Segment */}
-                  <fieldset aria-label="Choose quantity" className="mt-8">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">Quantity</h3>
-                    <div className="flex items-center space-x-3">
-                      <button
-                        type="button"
-                        disabled={data.quantity <= 1}
-                        onClick={() => setData('quantity', data.quantity - 1)}
-                        className="px-4 py-2 border border-gray-300 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50 font-semibold text-gray-700 transition"
-                      >
-                        -
-                      </button>
-
-                      <input 
-                        type="text"
-                        value={data.quantity}
-                        readOnly
-                        className="w-14 text-center border border-gray-300 rounded py-2 font-medium bg-white focus:outline-hidden"
-                      />
-
-                      <button
-                        type="button"
-                        disabled={activeVariant ? data.quantity >= activeVariant.stock : true}
-                        onClick={() => setData('quantity', data.quantity + 1)}
-                        className="px-4 py-2 border border-gray-300 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50 font-semibold text-gray-700 transition"
-                      >
-                        +
-                      </button>
                     </div>
                   </fieldset>
-                    
                 </div>
               )}
 
               {/* Add To Cart Form Submission Trigger */}
-<button
+              <button
                 type="submit"
-                disabled={user && (processing || !selectedSize || (activeVariant && activeVariant.stock === 0))}
+                disabled={!selectedSize || (activeVariant && activeVariant.stock === 0)}
                 className={classNames(
-                  user && (processing || !selectedSize || activeVariant?.stock === 0) 
+                  (!selectedSize || activeVariant?.stock === 0) 
                     ? 'bg-gray-400 cursor-not-allowed opacity-50' 
                     : 'bg-indigo-600 hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
                   "mt-10 flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-base font-medium text-white transition focus:outline-hidden"
                 )}
               >
-                {!user 
-                  ? 'Login to Order' 
-                  : processing 
-                    ? 'Adding to bag...' 
-                    : !selectedSize 
-                      ? 'Select a Size' 
-                      : activeVariant?.stock === 0 
-                        ? 'Out of Stock' 
-                        : 'Add to bag'
-                }
+                {!selectedSize ? 'Select a Size' : activeVariant?.stock === 0 ? 'Out of Stock' : 'Add to bag'}
               </button>
-       
 
               {activeVariant?.sku && (
                 <p className="mt-3 text-center text-xs text-gray-400">SKU: {activeVariant.sku}</p>

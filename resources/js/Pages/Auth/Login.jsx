@@ -7,10 +7,14 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect') || '';
+
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
         remember: false,
+        redirect: redirectUrl,
     });
 
     const submit = (e) => {
@@ -80,7 +84,16 @@ export default function Login({ status, canResetPassword }) {
                     </label>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
+                <div className="mt-4 flex items-center justify-center">
+                            <PrimaryButton className="ms-4" disabled={processing}>
+                        Log in
+                    </PrimaryButton>
+      
+
+            
+                </div>
+                   <div className="mt-4 flex items-center justify-center">
+                
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
@@ -90,9 +103,19 @@ export default function Login({ status, canResetPassword }) {
                         </Link>
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
+            
+                </div>
+
+                               <div className="mt-4 flex items-center justify-center">
+                    {canResetPassword && (
+                        <Link
+                            href={route('register')}
+                            className="rounded-md text-sm text-gray-500 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                        >
+                           Don't have account yet?
+                        </Link>
+                    )}
+
                 </div>
             </form>
         </GuestLayout>

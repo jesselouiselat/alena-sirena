@@ -3,17 +3,21 @@ import Header from "@/Components/Header";
 import Layout from "@/Layouts/Layout";
 import { Head } from "@inertiajs/react";
 import Banner from "@/Components/Banner";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 export default function Home({ categories, products }) {
     return (
         <>
-            <Layout categories={categories}>
+            <AuthenticatedLayout categories={categories}>
 
                 <Head title="Home"></Head>
                 <Banner products={products}></Banner>
-                <ProductsGrid products={products} />
+       <ProductsGrid
+                    products={products}
+                    categories={categories}                
+                ></ProductsGrid>
    
-            </Layout>
+            </AuthenticatedLayout>
 
    
         </>

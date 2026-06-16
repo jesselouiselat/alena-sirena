@@ -24,9 +24,7 @@ class ProductController extends Controller
         return Inertia::render('Shop/ShowProductPage', [
             "product" => $product->load(["categories", "images", "variants"]),
             'categories' => Category::with("products.images")->get()
-
         ]);
-
 
     }
 }

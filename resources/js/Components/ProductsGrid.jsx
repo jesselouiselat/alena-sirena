@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Show from './ProductModal';
 
-export default function ProductsGrid({ products }) {
+export default function ProductsGrid({ products, category, currentCategory }) {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -18,7 +18,7 @@ export default function ProductsGrid({ products }) {
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Customers also purchased</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">{currentCategory?.name || category?.name}</h2>
 
         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
           {products.map((product) => (
@@ -47,11 +47,7 @@ export default function ProductsGrid({ products }) {
                     </div>
                   </h3>
                   
-                  {product.categories?.map((category) => (
-                    <div key={category.id}>
-                      <p className="mt-1 text-sm text-gray-500">{category.name}</p>
-                    </div>
-                  ))}
+               
                 </div>
                 <p className="text-sm font-medium text-gray-900">₱{product.price}</p>
               </div>

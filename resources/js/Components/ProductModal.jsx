@@ -47,7 +47,7 @@ export default function ProductModal({ product, isOpen, onClose }) {
 
                     <div className="mt-6">
                       <div className="flex items-center">
-                        <div className="flex items-center">
+                        {/* <div className="flex items-center">
                           {[0, 1, 2, 3, 4].map((rating) => (
                             <StarIcon
                               key={rating}
@@ -58,7 +58,7 @@ export default function ProductModal({ product, isOpen, onClose }) {
                               )}
                             />
                           ))}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </section>
@@ -72,12 +72,13 @@ export default function ProductModal({ product, isOpen, onClose }) {
                         </p>
                       </div>
 
-                      <button
-                        type="submit"
+                      <a
+                        href={`/products/${product.slug}`}
+                        
                         className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 transition"
                       >
-                        Add to bag
-                      </button>
+                        View Product Details
+                      </a>
                     </form>
                   </section>
                 </div>

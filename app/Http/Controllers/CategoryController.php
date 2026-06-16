@@ -3,16 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($slug)
     {
-        //
+        $currentCategory = Category::where('slug', $slug)->firstOrFail();
+
+        $products = Product::whereHas('categories', function ($query) use ($currentCategory) {
+            $query->where('categories.id', $currentCategory->id);
+        })->with(['images', 'categories'])->get();
+
+        return Inertia::render('Shop/CategoriesPage', [
+            'products' => $products,
+            'categories' => Category::with("products.images")->get(),
+            'currentCategory' => $currentCategory
+        ]);
     }
 
     /**
